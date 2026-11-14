@@ -1,6 +1,37 @@
-// EEG Band Amplitudes - BioAmp EXG Pill + Arduino UNO
-// Shows the amplitude of Delta, Theta, Alpha and Beta activity in the Serial Plotter.
-// Based on the Upside Down Labs EEG Filter example (MIT License).
+// EEG Band Amplitudes - BioAmp + Arduino UNO
+// Shows the amplitude of Delta, Theta, Alpha and Beta activity in the Serial Plotter,
+// and feeds the 3D brain visualization (index.html).
+//
+// Modified from Upside Down Labs' 02-eeg-filter.ino:
+// https://github.com/upsidedownlabs/Brain-BioAmp-Arduino-Firmware/blob/main/02-eeg-filter/02-eeg-filter.ino
+//
+// Changes from the original:
+//  - Keeps the original 256 Hz sampling timer and biquad (second-order section) filter structure
+//  - Replaces the single 0.5-29.5 Hz band-pass with four band-pass filters
+//    (Delta 0.5-4, Theta 4-8, Alpha 8-13, Beta 13-30 Hz), designed with SciPy for 256 Hz
+//  - Outputs the smoothed RMS amplitude of each band (or each band's % share of the total)
+//
+// Original code under the MIT License:
+//
+// Copyright (c) 2021 Upside Down Labs - contact@upsidedownlabs.tech
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #define SAMPLE_RATE 256
 #define BAUD_RATE 115200
