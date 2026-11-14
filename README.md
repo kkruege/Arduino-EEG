@@ -2,7 +2,7 @@
 
 EEG experiments with Upside Down Labs' [BioAmp](https://github.com/upsidedownlabs/Brain-BioAmp-Arduino-Firmware) hardware and an Arduino UNO, building on their [EEG filter example](https://github.com/upsidedownlabs/Brain-BioAmp-Arduino-Firmware/blob/main/02-eeg-filter/02-eeg-filter.ino), including a 3D brain visualization that glows with live EEG band activity.
 
-**Live visualization:** https://kkruege.github.io/Arduino-EEG/ (after GitHub Pages is turned on, see below)
+**Live visualization:** [kkruege.github.io/Arduino-EEG](https://kkruege.github.io/Arduino-EEG/). Open it in Chrome or Edge, then click **Connect Arduino**, or **Demo** to try it without hardware.
 
 ## Contents
 
@@ -89,7 +89,7 @@ The headband holds the two forehead electrodes (red and black wires). The third 
 
 1. Upload `eeg_bands/eeg_bands.ino` to the Arduino.
 2. Close the Arduino IDE's Serial Monitor and Serial Plotter, so the port is free.
-3. Open the visualization in **Chrome or Edge**: either the GitHub Pages link above, or `index.html` downloaded to your computer.
+3. Open the visualization in **Chrome or Edge**: either the [live link](https://kkruege.github.io/Arduino-EEG/), or `index.html` downloaded to your computer.
 4. Click **Connect Arduino** and choose the board's port. Or click **Demo** to see it with simulated data.
 
 | Band | Range | Color |
@@ -105,10 +105,6 @@ Each band's brightness is relative to its own average over the last ~20 seconds.
 
 - Values are raw ADC counts after amplification, not calibrated microvolts.
 - At the forehead, eye blinks (Delta) and facial and jaw muscle activity (Beta) are much larger than brain activity.
-
-## Turning on GitHub Pages
-
-In this repository, go to **Settings → Pages**, set **Branch** to `main` and `/ (root)`, and click **Save**. The page appears at the link above after a minute or two.
 
 ## Credits and license
 
