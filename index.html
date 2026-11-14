@@ -26,6 +26,24 @@
   button:hover { background:rgba(255,255,255,.15); }
   button.primary { background:#3b4cff; border-color:#3b4cff; }
   .hint { color:var(--muted); font-size:11px; margin-top:10px; }
+  .note { margin-top:10px; padding:8px 10px; border-radius:8px; font-size:11.5px; line-height:1.45;
+    background:rgba(255,196,0,.08); border:1px solid rgba(255,196,0,.25); color:#f3dfa0; }
+  .link { background:none; border:0; padding:0; color:#9fb0ff; text-decoration:underline; cursor:pointer; font-size:inherit; flex:none; }
+  .link:hover { background:none; color:#c5cfff; }
+  #about { position:fixed; top:16px; right:16px; bottom:16px; width:380px; max-width:calc(100vw - 32px);
+    overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:16px 18px; backdrop-filter:blur(8px); font-size:13px; line-height:1.5; display:none; }
+  #about.open { display:block; }
+  #about h2 { font-size:15px; margin:0 0 8px; }
+  #about h3 { font-size:13px; margin:16px 0 4px; }
+  #about p { margin:6px 0; color:#cfd3ea; }
+  #about ul { margin:4px 0 0; padding-left:18px; color:#cfd3ea; }
+  #about li { margin:3px 0; }
+  #about .tag { display:inline-block; font-size:10.5px; padding:1px 6px; border-radius:4px; margin-left:4px;
+    vertical-align:1px; border:1px solid currentColor; opacity:.85; }
+  .brain { color:#7fd6ff; } .art { color:#ffb37f; }
+  #closeAbout { position:sticky; top:0; float:right; flex:none; padding:4px 10px; }
+  @media (max-width:700px) { #about { top:auto; left:16px; height:60vh; width:auto; } }
 </style>
 </head>
 <body>
@@ -38,7 +56,59 @@
     <button id="demo">Demo</button>
   </div>
   <div class="hint">Bars = each band vs. its own recent average (middle = normal). Drag to rotate, scroll to zoom.</div>
+  <div class="note"><b>Artistic representation.</b> Two forehead electrodes can't tell <i>where</i> in the brain a signal comes from, and much of it isn't brain activity at all. <button class="link" id="openAbout">What am I seeing?</button></div>
 </div>
+
+<aside id="about" aria-label="About this visualization">
+  <button id="closeAbout">Close</button>
+  <h2>About this visualization</h2>
+  <p><b>This is an artistic representation, not a brain scan.</b> The glow is spread across a 3D brain for visual effect. The spatial position of the colors is <b>not accurate</b>: this setup has one channel (two forehead electrodes and a reference behind the ear), so it measures a single combined signal and has no information about where in the head it came from. Real source localization needs many electrodes (often 32–256) and specialized analysis.</p>
+  <p>Waves start at the forehead because that is where the electrodes are. Pulse speeds are slowed down so they're visible. Each band's brightness is compared with its own average over the last ~20 seconds, so it shows <i>changes</i>, not absolute levels. Values are uncalibrated ADC counts, not microvolts.</p>
+  <p>At the forehead, signals from the eyes and face muscles are often <b>much larger</b> than brain signals. Each band below lists what can show up in it, labelled <span class="tag brain">brain</span> or <span class="tag art">non-brain</span>.</p>
+
+  <h3 style="color:#7b61ff">Delta (0.5–4 Hz)</h3>
+  <ul>
+    <li>Eye blinks: large, slow spikes; usually the biggest signal at the forehead <span class="tag art">non-brain</span></li>
+    <li>Eye movements (looking up, down, left, right), picked up as EOG <span class="tag art">non-brain</span></li>
+    <li>Electrode movement, cable sway and changing skin contact <span class="tag art">non-brain</span></li>
+    <li>Sweat and slow skin-potential drift <span class="tag art">non-brain</span></li>
+    <li>Pulse from blood vessels under an electrode, and breathing-related movement <span class="tag art">non-brain</span></li>
+    <li>Slow-wave activity of the prefrontal cortex, mostly during drowsiness or sleep <span class="tag brain">brain</span></li>
+  </ul>
+
+  <h3 style="color:#00b4ff">Theta (4–8 Hz)</h3>
+  <ul>
+    <li>Frontal midline theta from medial prefrontal and anterior cingulate cortex, linked to concentration and working memory <span class="tag brain">brain</span></li>
+    <li>Drowsiness and the transition toward sleep <span class="tag brain">brain</span></li>
+    <li>The faster edges of blinks and eye movements <span class="tag art">non-brain</span></li>
+    <li>Head and body movement <span class="tag art">non-brain</span></li>
+  </ul>
+
+  <h3 style="color:#2dff8a">Alpha (8–13 Hz)</h3>
+  <ul>
+    <li>Relaxed, eyes-closed alpha. It is strongest at the back of the head (occipital and parietal cortex) and only reaches the forehead weakly, spread through the head (volume conduction) <span class="tag brain">brain</span></li>
+    <li>Frontal alpha from the prefrontal cortex, which varies with relaxation and attention <span class="tag brain">brain</span></li>
+    <li>Low-level muscle tension in the forehead or jaw (muscle activity spreads into this range) <span class="tag art">non-brain</span></li>
+    <li>Small eye movements <span class="tag art">non-brain</span></li>
+  </ul>
+
+  <h3 style="color:#ff7a3d">Beta (13–30 Hz)</h3>
+  <ul>
+    <li>Forehead muscle (frontalis): raising the eyebrows <span class="tag art">non-brain</span></li>
+    <li>Frowning muscle (corrugator) between the eyebrows <span class="tag art">non-brain</span></li>
+    <li>Jaw muscles (temporalis and masseter): clenching, chewing, talking, swallowing <span class="tag art">non-brain</span></li>
+    <li>Tiny eye muscle twitches during saccades <span class="tag art">non-brain</span></li>
+    <li>Active thinking and alertness in the prefrontal cortex <span class="tag brain">brain</span></li>
+    <li>Motor planning activity from frontal areas <span class="tag brain">brain</span></li>
+  </ul>
+
+  <h3>Getting more brain, less noise</h3>
+  <ul>
+    <li>Sit still, relax your face and jaw, and keep your eyes on one point.</li>
+    <li>Use good skin contact (clean skin; gel helps) and keep cables from swinging.</li>
+    <li>Run the laptop on battery to reduce mains interference.</li>
+  </ul>
+</aside>
 
 <script type="importmap">
 { "imports": {
@@ -294,6 +364,12 @@ addEventListener('resize', () => {
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
+</script>
+<script>
+  const about = document.getElementById('about');
+  document.getElementById('openAbout').onclick = () => about.classList.add('open');
+  document.getElementById('closeAbout').onclick = () => about.classList.remove('open');
+  addEventListener('keydown', e => { if (e.key === 'Escape') about.classList.remove('open'); });
 </script>
 </body>
 </html>
