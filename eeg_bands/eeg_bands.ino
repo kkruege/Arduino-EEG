@@ -11,6 +11,9 @@
 //    (Delta 0.5-4, Theta 4-8, Alpha 8-13, Beta 13-30 Hz), designed with SciPy for 256 Hz
 //  - Outputs the smoothed RMS amplitude of each band (or each band's % share of the total)
 //
+// AI assistance: this sketch was written with the assistance of Claude, an AI model
+// by Anthropic (https://www.anthropic.com/claude), and reviewed by the project author.
+//
 // Original code under the MIT License:
 //
 // Copyright (c) 2021 Upside Down Labs - contact@upsidedownlabs.tech

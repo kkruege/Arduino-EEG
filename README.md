@@ -107,4 +107,8 @@ What was changed:
 - **`eeg_bands.ino`:** keeps the original 256 Hz sampling timer and biquad filter structure, but replaces the single band-pass filter with four band filters (Delta, Theta, Alpha, Beta) and outputs each band's amplitude.
 - **`index.html`:** new. A 3D visualization built with [Three.js](https://threejs.org/) (MIT License) that reads the `eeg_bands.ino` output.
 
+### AI assistance
+
+The code (`eeg_filter.ino`, `eeg_bands.ino`, `index.html`), the wiring diagram and this README were created with the assistance of [Claude](https://www.anthropic.com/claude), an AI model by Anthropic. The project author directed the work and reviewed the results.
+
 If you use Upside Down Labs' hardware and code, please consider supporting them by buying from [Upside Down Labs](https://upsidedownlabs.tech/).

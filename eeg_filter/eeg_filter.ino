@@ -9,6 +9,9 @@
 //  - Skips the filter's start-up spike (WARMUP_MS)
 //  - Adds a smoothed amplitude "envelope" line
 //
+// AI assistance: this sketch was written with the assistance of Claude, an AI model
+// by Anthropic (https://www.anthropic.com/claude), and reviewed by the project author.
+//
 // Original code and filter coefficients under the MIT License:
 //
 // Copyright (c) 2021 Upside Down Labs - contact@upsidedownlabs.tech
