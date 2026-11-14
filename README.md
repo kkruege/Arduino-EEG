@@ -39,7 +39,7 @@ EEG experiments with Upside Down Labs' [BioAmp](https://github.com/upsidedownlab
 |---|---|---|
 | VCC | 5V | Red |
 | GND | GND | Black |
-| OUT | A0 | Orange |
+| OUT | A0 | Yellow |
 
 > ⚠️ **Double-check VCC and GND before plugging in.** Swapping them will destroy the BioAmp EXG Pill. Always follow the labels printed on the board, not the position of the pins or the wire colors.
 
@@ -49,11 +49,18 @@ If you connect OUT to a pin other than A0, change `INPUT_PIN` at the top of the 
 
 | Electrode | Where it goes on your head | Pill input |
 |---|---|---|
-| Forehead, left | On the forehead, under the headband | IN+ |
-| Forehead, right | On the forehead, a few cm from IN+ | IN− |
-| Reference | Bony area behind the ear (mastoid), on a gel electrode | REF |
+| Forehead, left | On the forehead, under the headband | IN+ (red wire in the photos) |
+| Forehead, right | On the forehead, a few cm from IN+ | IN− (black wire in the photos) |
+| Reference | Bony area behind the ear (mastoid), on a gel electrode | REF (yellow wire in the photos) |
 
 Cable colors differ between kits, so go by the **IN+ / IN− / REF** labels on the board and cable.
+
+### Photos of the build
+
+| BioAmp EXG Pill close-up | Pill connected to the UNO | UNO connections |
+|---|---|---|
+| <img src="images/build-bioamp-pill-closeup.jpg" width="260" alt="BioAmp EXG Pill close-up showing VCC, GND, OUT labels at the top and IN−, IN+, REF at the electrode connector"> | <img src="images/build-pill-to-uno.jpg" width="260" alt="BioAmp EXG Pill wired to an Arduino UNO with red, black and yellow jumper wires"> | <img src="images/build-uno-connections.jpg" width="260" alt="Close-up of jumper wires plugged into the Arduino UNO power and analog headers"> |
+| Top: **VCC, GND, OUT** (to the UNO). Bottom connector: **IN−, IN+, REF** (to the electrodes). | Red = VCC, black = GND, yellow = OUT. | Connect yellow to **A0**, black to **GND**, red to **5V**. |
 
 ## Setup steps
 
@@ -70,7 +77,9 @@ Cable colors differ between kits, so go by the **IN+ / IN− / REF** labels on t
 
 ## Full setup
 
-<img src="images/photo-full-setup.svg" width="640" alt="Full assembled setup">
+<img src="images/build-full-setup.jpg" width="640" alt="Full setup: electrode headband with three snap electrodes, BioAmp cable, BioAmp EXG Pill, and Arduino UNO with USB cable">
+
+The headband holds the two forehead electrodes (red and black wires). The third electrode on its own tab (yellow wire) is the reference that goes behind the ear.
 
 ## Running the 3D visualization
 

@@ -1,52 +1,77 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" font-family="Helvetica, Arial, sans-serif">
-  <rect width="960" height="520" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="960" height="540" font-family="Helvetica, Arial, sans-serif">
+  <rect width="960" height="540" fill="#ffffff"/>
   <text x="480" y="36" text-anchor="middle" font-size="22" font-weight="bold" fill="#1f2937">Wiring: Electrodes → BioAmp EXG Pill → Arduino UNO</text>
 
-  <!-- ===== Head (front view) ===== -->
-  <ellipse cx="80" cy="282" rx="14" ry="30" fill="#f3d3b8" stroke="#8a6a55" stroke-width="2"/>
-  <ellipse cx="290" cy="282" rx="14" ry="30" fill="#f3d3b8" stroke="#8a6a55" stroke-width="2"/>
-  <ellipse cx="185" cy="270" rx="105" ry="135" fill="#f8dfc8" stroke="#8a6a55" stroke-width="2.5"/>
-  <path d="M95 190 Q185 150 275 190" fill="none" stroke="#4b5563" stroke-width="14" stroke-linecap="round" opacity="0.85"/>
-  <text x="16" y="150" font-size="13" fill="#4b5563">Headband /</text><text x="16" y="166" font-size="13" fill="#4b5563">BioAmp Band</text>
+  <!-- ===== Person (front view): dark skin, box braids ===== -->
+  <defs>
+    <g id="braid">
+      <path d="M0 0 q-5 8 0 16 q5 8 0 16 q-5 8 0 16 q5 8 0 16 q-5 8 0 16 q5 8 0 16 q-5 8 0 16 q5 8 0 16 q-5 8 0 16 q5 8 0 16 q-5 8 0 16" fill="none" stroke="#17100c" stroke-width="10" stroke-linecap="round"/>
+      <path d="M-2 4 l4 6 M-2 20 l4 6 M-2 36 l4 6 M-2 52 l4 6 M-2 68 l4 6 M-2 84 l4 6 M-2 100 l4 6 M-2 116 l4 6 M-2 132 l4 6 M-2 148 l4 6" stroke="#4a3a30" stroke-width="1.5"/>
+    </g>
+  </defs>
+  <!-- shoulders / shirt -->
+  <path d="M40 520 Q50 430 130 412 L240 412 Q320 430 330 520 Z" fill="#3f6e8c" stroke="#24465a" stroke-width="2"/>
+  <rect x="160" y="370" width="50" height="50" fill="#5a3522"/>
+  <!-- braids behind head (hang to shoulders) -->
+  <g>
+    <use href="#braid" x="88" y="230"/><use href="#braid" x="100" y="250"/><use href="#braid" x="78" y="260"/>
+    <use href="#braid" x="282" y="230"/><use href="#braid" x="270" y="250"/><use href="#braid" x="292" y="260"/>
+  </g>
+  <!-- ears -->
+  <ellipse cx="84" cy="285" rx="14" ry="26" fill="#5a3522" stroke="#2e1a10" stroke-width="2"/>
+  <ellipse cx="286" cy="285" rx="14" ry="26" fill="#5a3522" stroke="#2e1a10" stroke-width="2"/>
   <!-- face -->
-  <ellipse cx="150" cy="255" rx="13" ry="7" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
-  <ellipse cx="220" cy="255" rx="13" ry="7" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
-  <circle cx="150" cy="255" r="4" fill="#374151"/><circle cx="220" cy="255" r="4" fill="#374151"/>
-  <path d="M185 268 L178 305 L192 305" fill="none" stroke="#8a6a55" stroke-width="2"/>
-  <path d="M160 340 Q185 355 210 340" fill="none" stroke="#8a6a55" stroke-width="2"/>
-  <!-- electrodes -->
-  <circle cx="150" cy="180" r="11" fill="#c0c7d1" stroke="#111827" stroke-width="2"/>
-  <circle cx="220" cy="180" r="11" fill="#c0c7d1" stroke="#111827" stroke-width="2"/>
-  <circle cx="300" cy="320" r="11" fill="#c0c7d1" stroke="#111827" stroke-width="2"/>
-  <text x="150" y="214" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">IN+</text>
-  <text x="220" y="214" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">IN−</text>
-  <text x="300" y="350" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">REF</text>
-  <text x="300" y="366" text-anchor="middle" font-size="12" fill="#4b5563">behind ear</text>
-  <text x="185" y="440" text-anchor="middle" font-size="13" fill="#4b5563">IN+ and IN− on the forehead (dry band or gel electrodes)</text>
-  <text x="185" y="458" text-anchor="middle" font-size="13" fill="#4b5563">REF on the bony area behind the ear (gel electrode)</text>
+  <ellipse cx="185" cy="275" rx="100" ry="125" fill="#6b4029" stroke="#2e1a10" stroke-width="2.5"/>
+  <!-- hair top (braids gathered back from hairline) -->
+  <path d="M85 250 Q80 120 185 112 Q290 120 285 250 Q275 190 250 175 Q185 150 120 175 Q95 190 85 250 Z" fill="#17100c"/>
+  <g stroke="#4a3a30" stroke-width="2" fill="none">
+    <path d="M120 175 Q130 140 150 122"/><path d="M150 166 Q160 135 172 116"/><path d="M185 160 Q186 135 186 113"/>
+    <path d="M220 166 Q210 135 198 116"/><path d="M250 175 Q240 140 220 122"/>
+  </g>
+  <!-- headband -->
+  <path d="M88 205 Q185 168 282 205" fill="none" stroke="#2b2b2b" stroke-width="16" stroke-linecap="round"/>
+  <!-- eyebrows, eyes, nose, mouth -->
+  <path d="M135 240 Q150 233 165 238" stroke="#17100c" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M205 238 Q220 233 235 240" stroke="#17100c" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="150" cy="258" rx="13" ry="7" fill="#f5efe8"/><ellipse cx="220" cy="258" rx="13" ry="7" fill="#f5efe8"/>
+  <circle cx="150" cy="258" r="5" fill="#1a0f0a"/><circle cx="220" cy="258" r="5" fill="#1a0f0a"/>
+  <path d="M178 275 Q173 300 170 305 Q185 314 200 305 Q197 300 192 275" fill="none" stroke="#3a2015" stroke-width="2.2"/>
+  <path d="M160 338 Q185 350 210 338 Q185 344 160 338 Z" fill="#4a2618" stroke="#3a2015" stroke-width="2"/>
 
-  <!-- ===== Electrode cable ===== -->
-  <path d="M150 169 C150 95 330 95 360 210 L392 210" fill="none" stroke="#1d4ed8" stroke-width="3"/>
-  <path d="M220 169 C225 110 335 120 352 232 L392 232" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-dasharray="8 4"/>
-  <path d="M311 320 C350 320 344 254 392 254" fill="none" stroke="#7c3aed" stroke-width="3"/>
-  <text x="372" y="138" font-size="13" fill="#4b5563">BioAmp Cable</text>
+  <!-- electrodes -->
+  <circle cx="150" cy="195" r="11" fill="#c9ced6" stroke="#111827" stroke-width="2"/>
+  <circle cx="220" cy="195" r="11" fill="#c9ced6" stroke="#111827" stroke-width="2"/>
+  <circle cx="300" cy="322" r="11" fill="#c9ced6" stroke="#111827" stroke-width="2"/>
+  <rect x="112" y="226" width="34" height="20" rx="5" fill="#ffffff" stroke="#dc2626" stroke-width="1.5" transform="translate(-28 -38)"/>
+  <text x="101" y="203" text-anchor="middle" font-size="13" font-weight="bold" fill="#dc2626">IN+</text>
+  <rect x="252" y="188" width="34" height="20" rx="5" fill="#ffffff" stroke="#111827" stroke-width="1.5"/>
+  <text x="269" y="203" text-anchor="middle" font-size="13" font-weight="bold" fill="#111827">IN−</text>
+  <text x="335" y="372" text-anchor="middle" font-size="14" font-weight="bold" fill="#b45309">REF</text>
+  <text x="335" y="388" text-anchor="middle" font-size="12" fill="#4b5563">behind ear</text>
+  <text x="16" y="96" font-size="13" fill="#4b5563">Headband / BioAmp Band</text>
+
+  <!-- ===== Electrode cable (colors match the BioAmp Cable in the build photos) ===== -->
+  <path d="M220 184 C230 90 350 100 360 212 L392 212" fill="none" stroke="#111827" stroke-width="3"/>
+  <path d="M150 184 C140 60 375 60 372 234 L392 234" fill="none" stroke="#dc2626" stroke-width="3"/>
+  <path d="M311 322 C352 322 346 256 392 256" fill="none" stroke="#eab308" stroke-width="3"/>
+  <text x="300" y="66" font-size="13" fill="#4b5563">BioAmp Cable</text>
 
   <!-- ===== BioAmp EXG Pill ===== -->
-  <rect x="392" y="190" width="190" height="84" rx="10" fill="#14532d" stroke="#052e16" stroke-width="2"/>
-  <text x="487" y="182" text-anchor="middle" font-size="15" font-weight="bold" fill="#1f2937">BioAmp EXG Pill</text>
+  <rect x="392" y="190" width="190" height="88" rx="10" fill="#5b2a86" stroke="#36154f" stroke-width="2"/>
+  <text x="487" y="180" text-anchor="middle" font-size="15" font-weight="bold" fill="#1f2937">BioAmp EXG Pill</text>
   <g font-size="13" font-weight="bold" fill="#ffffff">
-    <text x="404" y="215">IN+</text><text x="404" y="237">IN−</text><text x="404" y="259">REF</text>
-    <text x="570" y="215" text-anchor="end">VCC</text><text x="570" y="237" text-anchor="end">GND</text><text x="570" y="259" text-anchor="end">OUT</text>
+    <text x="404" y="217">IN−</text><text x="404" y="239">IN+</text><text x="404" y="261">REF</text>
+    <text x="570" y="217" text-anchor="end">VCC</text><text x="570" y="239" text-anchor="end">GND</text><text x="570" y="261" text-anchor="end">OUT</text>
   </g>
   <g fill="#fbbf24" stroke="#78350f" stroke-width="1">
-    <circle cx="392" cy="210" r="5"/><circle cx="392" cy="232" r="5"/><circle cx="392" cy="254" r="5"/>
-    <circle cx="582" cy="210" r="5"/><circle cx="582" cy="232" r="5"/><circle cx="582" cy="254" r="5"/>
+    <circle cx="392" cy="212" r="5"/><circle cx="392" cy="234" r="5"/><circle cx="392" cy="256" r="5"/>
+    <circle cx="582" cy="212" r="5"/><circle cx="582" cy="234" r="5"/><circle cx="582" cy="256" r="5"/>
   </g>
 
   <!-- ===== Wires Pill → UNO ===== -->
-  <path d="M587 210 L640 210 L640 170 L708 170" fill="none" stroke="#dc2626" stroke-width="4"/>
-  <path d="M587 232 L660 232 L660 205 L708 205" fill="none" stroke="#111827" stroke-width="4"/>
-  <path d="M587 254 L660 254 L660 300 L708 300" fill="none" stroke="#f59e0b" stroke-width="4"/>
+  <path d="M587 212 L640 212 L640 170 L708 170" fill="none" stroke="#dc2626" stroke-width="4"/>
+  <path d="M587 234 L660 234 L660 205 L708 205" fill="none" stroke="#111827" stroke-width="4"/>
+  <path d="M587 256 L660 256 L660 300 L708 300" fill="none" stroke="#eab308" stroke-width="4"/>
 
   <!-- ===== Arduino UNO ===== -->
   <rect x="708" y="110" width="220" height="250" rx="12" fill="#00979d" stroke="#005c60" stroke-width="2"/>
@@ -60,14 +85,17 @@
 
   <!-- ===== Legend ===== -->
   <g font-size="14" fill="#1f2937">
-    <line x1="560" y1="400" x2="600" y2="400" stroke="#dc2626" stroke-width="4"/><text x="610" y="405">VCC → 5V</text>
-    <line x1="560" y1="428" x2="600" y2="428" stroke="#111827" stroke-width="4"/><text x="610" y="433">GND → GND</text>
-    <line x1="560" y1="456" x2="600" y2="456" stroke="#f59e0b" stroke-width="4"/><text x="610" y="461">OUT → A0</text>
+    <line x1="430" y1="410" x2="470" y2="410" stroke="#dc2626" stroke-width="4"/><text x="480" y="415">VCC → 5V</text>
+    <line x1="430" y1="438" x2="470" y2="438" stroke="#111827" stroke-width="4"/><text x="480" y="443">GND → GND</text>
+    <line x1="430" y1="466" x2="470" y2="466" stroke="#eab308" stroke-width="4"/><text x="480" y="471">OUT → A0</text>
+    <line x1="590" y1="410" x2="630" y2="410" stroke="#dc2626" stroke-width="3"/><text x="640" y="415">IN+ (forehead)</text>
+    <line x1="590" y1="438" x2="630" y2="438" stroke="#111827" stroke-width="3"/><text x="640" y="443">IN− (forehead)</text>
+    <line x1="590" y1="466" x2="630" y2="466" stroke="#eab308" stroke-width="3"/><text x="640" y="471">REF (behind ear)</text>
   </g>
-  <rect x="740" y="388" width="200" height="84" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
-  <text x="840" y="412" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">⚠ Double-check VCC/GND</text>
-  <text x="840" y="432" text-anchor="middle" font-size="12" fill="#7f1d1d">Swapping them will destroy</text>
-  <text x="840" y="448" text-anchor="middle" font-size="12" fill="#7f1d1d">the BioAmp EXG Pill. Follow</text>
-  <text x="840" y="464" text-anchor="middle" font-size="12" fill="#7f1d1d">the labels printed on the board.</text>
-  <text x="480" y="505" text-anchor="middle" font-size="12" fill="#6b7280">Pin order on your board may differ from this drawing. Always match the printed labels, not positions or wire colors.</text>
+  <rect x="770" y="398" width="176" height="86" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="858" y="420" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">⚠ Double-check VCC/GND</text>
+  <text x="858" y="440" text-anchor="middle" font-size="12" fill="#7f1d1d">Swapping them will</text>
+  <text x="858" y="456" text-anchor="middle" font-size="12" fill="#7f1d1d">destroy the Pill. Follow the</text>
+  <text x="858" y="472" text-anchor="middle" font-size="12" fill="#7f1d1d">labels printed on the board.</text>
+  <text x="640" y="525" text-anchor="middle" font-size="12" fill="#6b7280">Wire colors match the build photos. Cable colors vary between kits: always match the printed labels.</text>
 </svg>
