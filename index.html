@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EEG Brain Glow</title>
+<style>
+  :root { --bg:#05060b; --panel:rgba(14,16,28,.82); --text:#e8eaf6; --muted:#8a90b0; --line:rgba(255,255,255,.08); }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--text);
+    font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; overflow:hidden; }
+  canvas { display:block; }
+  #hud { position:fixed; top:16px; left:16px; width:280px; max-width:calc(100vw - 32px);
+    background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+    backdrop-filter:blur(8px); }
+  h1 { font-size:15px; margin:0 0 4px; font-weight:600; }
+  #status { color:var(--muted); font-size:12px; margin-bottom:12px; }
+  .row { display:grid; grid-template-columns:52px 1fr 48px; align-items:center; gap:8px; margin:7px 0; }
+  .name { font-weight:600; font-size:13px; }
+  .bar { height:8px; border-radius:4px; background:rgba(255,255,255,.07); overflow:hidden; }
+  .bar > i { display:block; height:100%; width:0; border-radius:4px; transition:width .1s linear; }
+  .val { text-align:right; font-variant-numeric:tabular-nums; color:var(--muted); font-size:12px; }
+  .btns { display:flex; gap:8px; margin-top:12px; }
+  button { flex:1; padding:8px 10px; border-radius:8px; border:1px solid var(--line); cursor:pointer;
+    background:rgba(255,255,255,.08); color:var(--text); font:inherit; font-size:13px; }
+  button:hover { background:rgba(255,255,255,.15); }
+  button.primary { background:#3b4cff; border-color:#3b4cff; }
+  .hint { color:var(--muted); font-size:11px; margin-top:10px; }
+</style>
+</head>
+<body>
+<div id="hud">
+  <h1>EEG Brain Glow</h1>
+  <div id="status">Not connected</div>
+  <div id="bars"></div>
+  <div class="btns">
+    <button id="connect" class="primary">Connect Arduino</button>
+    <button id="demo">Demo</button>
+  </div>
+  <div class="hint">Bars = each band vs. its own recent average (middle = normal). Drag to rotate, scroll to zoom.</div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ---------- Bands ----------
+// visHz = how fast each band's waves pulse on screen. Real EEG rates (2-20 Hz) flicker
+// too fast to watch, so they're slowed down but keep the same order (delta slowest, beta fastest).
+const BANDS = [
+  { name:'Delta', color:'#7b61ff', visHz:0.6 },
+  { name:'Theta', color:'#00b4ff', visHz:1.2 },
+  { name:'Alpha', color:'#2dff8a', visHz:2.0 },
+  { name:'Beta',  color:'#ff7a3d', visHz:3.2 },
+];
+const raw = [0,0,0,0];          // latest amplitudes from Arduino
+const baseline = [0,0,0,0];     // slow running average per band
+const level = [0,0,0,0];        // displayed level 0..1 (0.5 = at baseline)
+let lastData = 0;
+
+// ---------- HUD ----------
+const barsEl = document.getElementById('bars');
+const barFill = [], barVal = [];
+BANDS.forEach(b => {
+  const row = document.createElement('div'); row.className = 'row';
+  row.innerHTML = `<span class="name" style="color:${b.color}">${b.name}</span>
+    <span class="bar"><i style="background:${b.color}"></i></span><span class="val">–</span>`;
+  barsEl.appendChild(row);
+  barFill.push(row.querySelector('i')); barVal.push(row.querySelector('.val'));
+});
+const statusEl = document.getElementById('status');
+
+// ---------- Scene ----------
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(3.2, 1.4, 3.6);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.autoRotate = true; controls.autoRotateSpeed = 0.6;
+controls.minDistance = 2.5; controls.maxDistance = 10;
+
+// Brain is built facing +Z (forehead at +Z), Y up, X = left/right.
+// Folds ("gyri") made from layered sine noise pushed along the surface normal.
+function gyri(p) {
+  const x=p.x*7, y=p.y*7, z=p.z*7;
+  return 0.5*Math.sin(x + 2.1*Math.sin(z*0.8 + y*0.5))
+       * Math.sin(y*1.1 + 1.7*Math.sin(x*0.6 - z*0.4))
+       + 0.35*Math.sin(z*1.3 + 1.9*Math.sin(y*0.9 + x*0.7));
+}
+function makeHemisphere(side) {
+  const g = new THREE.SphereGeometry(1, 160, 120);
+  const pos = g.attributes.position, groove = new Float32Array(pos.count);
+  const v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i);
+    // Flatten the inner (medial) face where the two hemispheres meet
+    if (v.x * side < 0) v.x *= 0.35;
+    // Taper the front, deepen the back, flatten the bottom
+    v.x *= 0.55; v.y *= (v.y < 0 ? 0.55 : 0.8); v.z *= 1.15 + (v.z < 0 ? 0.08 : 0);
+    v.y += 0.06 * Math.cos(v.z * 2.0);
+    const n = v.clone().normalize(), d = gyri(v);
+    v.addScaledVector(n, 0.045 * d);
+    groove[i] = d;
+    v.x += side * 0.3;
+    pos.setXYZ(i, v.x, v.y, v.z);
+  }
+  g.setAttribute('groove', new THREE.BufferAttribute(groove, 1));
+  g.computeVertexNormals();
+  return g;
+}
+
+const shellUniforms = { uColor:{ value:new THREE.Color('#556') }, uGlow:{ value:0.5 } };
+const shellMat = new THREE.ShaderMaterial({
+  uniforms: shellUniforms, transparent:true, depthWrite:false,
+  blending:THREE.AdditiveBlending, side:THREE.DoubleSide,
+  vertexShader:`
+    attribute float groove; varying float vGroove; varying vec3 vN; varying vec3 vView;
+    void main(){ vGroove = groove;
+      vec4 mv = modelViewMatrix * vec4(position,1.0);
+      vN = normalize(normalMatrix * normal); vView = normalize(-mv.xyz);
+      gl_Position = projectionMatrix * mv; }`,
+  fragmentShader:`
+    uniform vec3 uColor; uniform float uGlow; varying float vGroove; varying vec3 vN; varying vec3 vView;
+    void main(){
+      float rim = pow(1.0 - abs(dot(vN, vView)), 2.2);
+      float fold = smoothstep(-0.6, 0.6, vGroove);
+      vec3 c = mix(vec3(0.45,0.5,0.7), uColor, 0.85);
+      float a = (0.06 + 0.14*fold + rim*(0.25 + 0.45*uGlow));
+      gl_FragColor = vec4(c * (0.35 + 0.8*fold + rim*0.8), a); }`
+});
+const brain = new THREE.Group();
+[-1, 1].forEach(s => brain.add(new THREE.Mesh(makeHemisphere(s), shellMat)));
+scene.add(brain);
+
+// Electrode markers: two on the forehead, reference behind the right ear
+const FOREHEAD = new THREE.Vector3(0, 0.25, 1.15);
+const elecMat = new THREE.MeshBasicMaterial({ color:0xffffff });
+[[-0.25,0.3,1.13],[0.25,0.3,1.13],[0.88,-0.3,-0.45]].forEach(p => {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.035, 16, 12), elecMat);
+  m.position.set(...p); scene.add(m);
+});
+
+// ---------- Glowing particles inside the shell ----------
+// Each particle belongs to one band. Its brightness pulses in waves that travel
+// outward from the forehead electrodes, at that band's rate, scaled by its level.
+const N = 9000;
+const pPos = new Float32Array(N*3), pBand = new Float32Array(N), pRand = new Float32Array(N);
+function insideBrain(x,y,z) {
+  for (const s of [-1,1]) {
+    const dx=(x - s*0.33)/0.5, dy=y/(y<0?0.5:0.76), dz=z/1.18;
+    if (dx*dx+dy*dy+dz*dz < 0.9) return true;
+  }
+  return false;
+}
+for (let i = 0; i < N; ) {
+  const x=(Math.random()*2-1)*0.9, y=(Math.random()*2-1)*0.8, z=(Math.random()*2-1)*1.25;
+  if (!insideBrain(x,y,z)) continue;
+  pPos.set([x,y,z], i*3); pBand[i] = i % 4; pRand[i] = Math.random(); i++;
+}
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+pGeo.setAttribute('band', new THREE.BufferAttribute(pBand, 1));
+pGeo.setAttribute('rnd', new THREE.BufferAttribute(pRand, 1));
+const pUniforms = {
+  uTime:{ value:0 }, uLevel:{ value:new THREE.Vector4() },
+  uHz:{ value:new THREE.Vector4(...BANDS.map(b=>b.visHz)) },
+  uColors:{ value:BANDS.map(b=>new THREE.Color(b.color)) },
+  uOrigin:{ value:FOREHEAD }, uScale:{ value:renderer.getPixelRatio() },
+};
+const pMat = new THREE.ShaderMaterial({
+  uniforms:pUniforms, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  vertexShader:`
+    uniform float uTime, uScale; uniform vec4 uLevel, uHz; uniform vec3 uColors[4]; uniform vec3 uOrigin;
+    attribute float band, rnd; varying vec3 vCol; varying float vB;
+    void main(){
+      int b = int(band + 0.5);
+      float lvl = uLevel[b], hz = uHz[b];
+      float d = distance(position, uOrigin);
+      // wave travelling outward from the forehead; wavelength shrinks for faster bands
+      float wave = 0.5 + 0.5*sin(6.2831*(hz*uTime - d*(0.5 + hz*0.35)) + rnd*0.8);
+      wave = pow(wave, 3.0);
+      float bright = lvl * (0.15 + 0.85*wave);
+      vCol = uColors[b]; vB = bright;
+      vec4 mv = modelViewMatrix * vec4(position,1.0);
+      gl_PointSize = (2.0 + 16.0*bright) * uScale * (3.0 / -mv.z);
+      gl_Position = projectionMatrix * mv; }`,
+  fragmentShader:`
+    varying vec3 vCol; varying float vB;
+    void main(){
+      float r = length(gl_PointCoord - 0.5);
+      float a = smoothstep(0.5, 0.0, r);
+      gl_FragColor = vec4(vCol * (0.4 + vB) * 2.2, a * min(1.0, vB*1.5)); }`
+});
+scene.add(new THREE.Points(pGeo, pMat));
+
+// ---------- Data handling ----------
+function onSample(vals) {
+  const first = baseline[0] === 0;
+  for (let i = 0; i < 4; i++) {
+    raw[i] = vals[i];
+    // ~20 s running average = "normal" for this band
+    baseline[i] = first ? vals[i] : baseline[i] + (vals[i] - baseline[i]) * 0.0015;
+  }
+  lastData = performance.now();
+}
+function parseLine(line) {
+  const vals = BANDS.map(b => {
+    const m = line.match(new RegExp(b.name + ':\\s*(-?[\\d.]+)', 'i'));
+    return m ? parseFloat(m[1]) : NaN;
+  });
+  if (vals.every(Number.isFinite)) onSample(vals);
+}
+
+// Web Serial (Chrome / Edge)
+let demoTimer = null;
+document.getElementById('connect').onclick = async () => {
+  if (!('serial' in navigator)) { statusEl.textContent = 'Web Serial not supported — use Chrome or Edge.'; return; }
+  try {
+    const port = await navigator.serial.requestPort();
+    await port.open({ baudRate:115200 });
+    stopDemo(); statusEl.textContent = 'Connected — waiting for data…';
+    const reader = port.readable.pipeThrough(new TextDecoderStream()).getReader();
+    let buf = '';
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += value;
+      let nl;
+      while ((nl = buf.indexOf('\n')) >= 0) { parseLine(buf.slice(0, nl)); buf = buf.slice(nl + 1); }
+      statusEl.textContent = 'Live from Arduino';
+    }
+  } catch (e) {
+    statusEl.textContent = 'Could not connect: ' + e.message + ' (is the Serial Plotter/Monitor closed?)';
+  }
+};
+
+// Demo mode: fake band amplitudes so you can see it without hardware
+function stopDemo(){ clearInterval(demoTimer); demoTimer = null; }
+document.getElementById('demo').onclick = () => {
+  if (demoTimer) { stopDemo(); statusEl.textContent = 'Demo stopped'; return; }
+  statusEl.textContent = 'Demo mode (simulated data)';
+  let t = 0, blink = 0;
+  demoTimer = setInterval(() => {
+    t += 1/32;
+    if (Math.random() < 0.006) blink = 1;
+    blink *= 0.9;
+    onSample([
+      40 + 10*Math.sin(t*0.3) + 120*blink,
+      14 + 5*Math.sin(t*0.21 + 1),
+      10 + 7*Math.max(0, Math.sin(t*0.12)),   // slow "eyes closed" alpha swells
+      8 + 3*Math.sin(t*0.5 + 2) + 4*Math.max(0, Math.sin(t*0.9))**8,
+    ]);
+  }, 1000/32);
+};
+
+// ---------- Animate ----------
+const mixCol = new THREE.Color(), tmp = new THREE.Color();
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.1);
+  pUniforms.uTime.value += dt;
+  const live = performance.now() - lastData < 2000;
+  let sum = 0; mixCol.setRGB(0,0,0);
+  for (let i = 0; i < 4; i++) {
+    // ratio to baseline: 1 = normal -> shown as 0.5; 2x baseline or more -> 1.0
+    const target = live && baseline[i] > 0 ? Math.min(raw[i] / baseline[i] / 2, 1) : 0.05;
+    level[i] += (target - level[i]) * Math.min(1, dt * 6);
+    pUniforms.uLevel.value.setComponent(i, level[i]);
+    mixCol.add(tmp.set(BANDS[i].color).multiplyScalar(level[i]));
+    sum += level[i];
+    barFill[i].style.width = (level[i]*100).toFixed(0) + '%';
+    barVal[i].textContent = live ? raw[i].toFixed(1) : '–';
+  }
+  if (sum > 0) mixCol.multiplyScalar(1/sum);
+  shellUniforms.uColor.value.lerp(mixCol, 0.05);
+  shellUniforms.uGlow.value = Math.min(sum / 2, 1);
+  if (!live && !demoTimer && lastData && statusEl.textContent.startsWith('Live')) statusEl.textContent = 'No data — check the sketch is running';
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+frame();
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
