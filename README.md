@@ -42,6 +42,11 @@ EEG experiments with Upside Down Labs' [BioAmp](https://github.com/upsidedownlab
 
 > ⚠️ **Double-check VCC and GND before plugging in.** Swapping them will destroy the BioAmp EXG Pill. Always follow the labels printed on the board, not the position of the pins or the wire colors.
 
+**5V or 3.3V?** The BioAmp EXG Pill's operating voltage is **3.3 V or 5 V**, according to the [Upside Down Labs documentation](https://docs.upsidedownlabs.tech/hardware/bioamp/bioamp-exg-pill/index.html), so VCC can go to either the UNO's **5V** or **3.3V** pin.
+- **5V is recommended with the UNO.** It's what Upside Down Labs uses in their Arduino UNO examples, and it uses the full range of the UNO's 0–5 V analog input.
+- **3.3V also works.** The signal then uses a smaller part of the UNO's input range, so the numbers in the plotter will be smaller.
+- If you use a board whose analog pins only accept 3.3 V, check the Upside Down Labs docs first: they say the Pill is set up for 5 V by default and can be made 3.3 V-compatible with a voltage divider.
+
 If you connect OUT to a pin other than A0, change `INPUT_PIN` at the top of the sketch to match.
 
 **Electrodes → BioAmp EXG Pill** (through the BioAmp Cable)
