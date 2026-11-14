@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" font-family="Helvetica, Arial, sans-serif">
+  <rect width="960" height="520" fill="#ffffff"/>
+  <text x="480" y="36" text-anchor="middle" font-size="22" font-weight="bold" fill="#1f2937">Wiring: Electrodes → BioAmp EXG Pill → Arduino UNO</text>
+
+  <!-- ===== Head (front view) ===== -->
+  <ellipse cx="80" cy="282" rx="14" ry="30" fill="#f3d3b8" stroke="#8a6a55" stroke-width="2"/>
+  <ellipse cx="290" cy="282" rx="14" ry="30" fill="#f3d3b8" stroke="#8a6a55" stroke-width="2"/>
+  <ellipse cx="185" cy="270" rx="105" ry="135" fill="#f8dfc8" stroke="#8a6a55" stroke-width="2.5"/>
+  <path d="M95 190 Q185 150 275 190" fill="none" stroke="#4b5563" stroke-width="14" stroke-linecap="round" opacity="0.85"/>
+  <text x="16" y="150" font-size="13" fill="#4b5563">Headband /</text><text x="16" y="166" font-size="13" fill="#4b5563">BioAmp Band</text>
+  <!-- face -->
+  <ellipse cx="150" cy="255" rx="13" ry="7" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
+  <ellipse cx="220" cy="255" rx="13" ry="7" fill="#fff" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="150" cy="255" r="4" fill="#374151"/><circle cx="220" cy="255" r="4" fill="#374151"/>
+  <path d="M185 268 L178 305 L192 305" fill="none" stroke="#8a6a55" stroke-width="2"/>
+  <path d="M160 340 Q185 355 210 340" fill="none" stroke="#8a6a55" stroke-width="2"/>
+  <!-- electrodes -->
+  <circle cx="150" cy="180" r="11" fill="#c0c7d1" stroke="#111827" stroke-width="2"/>
+  <circle cx="220" cy="180" r="11" fill="#c0c7d1" stroke="#111827" stroke-width="2"/>
+  <circle cx="300" cy="320" r="11" fill="#c0c7d1" stroke="#111827" stroke-width="2"/>
+  <text x="150" y="214" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">IN+</text>
+  <text x="220" y="214" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">IN−</text>
+  <text x="300" y="350" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">REF</text>
+  <text x="300" y="366" text-anchor="middle" font-size="12" fill="#4b5563">behind ear</text>
+  <text x="185" y="440" text-anchor="middle" font-size="13" fill="#4b5563">IN+ and IN− on the forehead (dry band or gel electrodes)</text>
+  <text x="185" y="458" text-anchor="middle" font-size="13" fill="#4b5563">REF on the bony area behind the ear (gel electrode)</text>
+
+  <!-- ===== Electrode cable ===== -->
+  <path d="M150 169 C150 95 330 95 360 210 L392 210" fill="none" stroke="#1d4ed8" stroke-width="3"/>
+  <path d="M220 169 C225 110 335 120 352 232 L392 232" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-dasharray="8 4"/>
+  <path d="M311 320 C350 320 344 254 392 254" fill="none" stroke="#7c3aed" stroke-width="3"/>
+  <text x="372" y="138" font-size="13" fill="#4b5563">BioAmp Cable</text>
+
+  <!-- ===== BioAmp EXG Pill ===== -->
+  <rect x="392" y="190" width="190" height="84" rx="10" fill="#14532d" stroke="#052e16" stroke-width="2"/>
+  <text x="487" y="182" text-anchor="middle" font-size="15" font-weight="bold" fill="#1f2937">BioAmp EXG Pill</text>
+  <g font-size="13" font-weight="bold" fill="#ffffff">
+    <text x="404" y="215">IN+</text><text x="404" y="237">IN−</text><text x="404" y="259">REF</text>
+    <text x="570" y="215" text-anchor="end">VCC</text><text x="570" y="237" text-anchor="end">GND</text><text x="570" y="259" text-anchor="end">OUT</text>
+  </g>
+  <g fill="#fbbf24" stroke="#78350f" stroke-width="1">
+    <circle cx="392" cy="210" r="5"/><circle cx="392" cy="232" r="5"/><circle cx="392" cy="254" r="5"/>
+    <circle cx="582" cy="210" r="5"/><circle cx="582" cy="232" r="5"/><circle cx="582" cy="254" r="5"/>
+  </g>
+
+  <!-- ===== Wires Pill → UNO ===== -->
+  <path d="M587 210 L640 210 L640 170 L708 170" fill="none" stroke="#dc2626" stroke-width="4"/>
+  <path d="M587 232 L660 232 L660 205 L708 205" fill="none" stroke="#111827" stroke-width="4"/>
+  <path d="M587 254 L660 254 L660 300 L708 300" fill="none" stroke="#f59e0b" stroke-width="4"/>
+
+  <!-- ===== Arduino UNO ===== -->
+  <rect x="708" y="110" width="220" height="250" rx="12" fill="#00979d" stroke="#005c60" stroke-width="2"/>
+  <rect x="760" y="90" width="56" height="34" rx="4" fill="#9ca3af" stroke="#4b5563" stroke-width="2"/>
+  <text x="818" y="245" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">Arduino UNO</text>
+  <g fill="#111827"><rect x="704" y="163" width="10" height="14"/><rect x="704" y="198" width="10" height="14"/><rect x="704" y="293" width="10" height="14"/></g>
+  <g font-size="14" font-weight="bold" fill="#ffffff">
+    <text x="722" y="175">5V</text><text x="722" y="210">GND</text><text x="722" y="305">A0</text>
+  </g>
+  <text x="788" y="80" text-anchor="middle" font-size="13" fill="#4b5563">USB → laptop (running on battery)</text>
+
+  <!-- ===== Legend ===== -->
+  <g font-size="14" fill="#1f2937">
+    <line x1="560" y1="400" x2="600" y2="400" stroke="#dc2626" stroke-width="4"/><text x="610" y="405">VCC → 5V</text>
+    <line x1="560" y1="428" x2="600" y2="428" stroke="#111827" stroke-width="4"/><text x="610" y="433">GND → GND</text>
+    <line x1="560" y1="456" x2="600" y2="456" stroke="#f59e0b" stroke-width="4"/><text x="610" y="461">OUT → A0</text>
+  </g>
+  <rect x="740" y="388" width="200" height="84" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="840" y="412" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">⚠ Double-check VCC/GND</text>
+  <text x="840" y="432" text-anchor="middle" font-size="12" fill="#7f1d1d">Swapping them will destroy</text>
+  <text x="840" y="448" text-anchor="middle" font-size="12" fill="#7f1d1d">the BioAmp EXG Pill. Follow</text>
+  <text x="840" y="464" text-anchor="middle" font-size="12" fill="#7f1d1d">the labels printed on the board.</text>
+  <text x="480" y="505" text-anchor="middle" font-size="12" fill="#6b7280">Pin order on your board may differ from this drawing. Always match the printed labels, not positions or wire colors.</text>
+</svg>
