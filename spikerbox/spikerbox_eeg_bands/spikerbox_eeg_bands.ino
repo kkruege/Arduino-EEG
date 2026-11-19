@@ -1,15 +1,16 @@
 // EEG Band Amplitudes (Backyard Brains SpikerBox)
-// For the Backyard Brains Heart & Brain SpikerBox (Arduino Leonardo inside).
+// For the Backyard Brains Heart & Brain SpikerBox. Works with both hardware versions:
+//   - V0.62 (newer, ATmega328 inside):    choose Tools > Board > Arduino Uno
+//   - V0.53 (older, ATmega32U4 inside):   choose Tools > Board > Arduino Leonardo
 // Outputs Delta, Theta, Alpha and Beta amplitudes for the Serial Plotter and the 3D brain page (index.html).
 //
-// IMPORTANT: in the Arduino IDE choose Tools > Board > Arduino Leonardo.
-// Uploading this replaces the SpikerBox's factory firmware, so the Spike Recorder
-// app won't work until you upload Backyard Brains' HeartAndBrainLeonardo-V1-0.ino again:
-// https://github.com/BackyardBrains/SpikerShield/tree/master/Heart-And-Brain/Arduino%20Code
+// IMPORTANT: uploading this replaces the SpikerBox's factory firmware, so the Spike
+// Recorder app won't work until you upload Backyard Brains' firmware for your version again:
+// https://github.com/BackyardBrains/Heart-and-Brain-SpikerBox (folders V0_62 and V0_53)
 //
 // Based on:
-//  - Backyard Brains' HeartAndBrainLeonardo-V1-0.ino (timer setup, fast ADC, and the
-//    5 kHz carrier on D13 that the SpikerBox hardware expects)
+//  - Backyard Brains' Heart-and-Brain-SpikerBox firmware, V0.62 and V0.53 (timer setup,
+//    fast ADC, pin setup, and the 5 kHz carrier that the SpikerBox hardware expects)
 //  - Upside Down Labs' 02-eeg-filter.ino (sampling loop and biquad filter structure):
 //    https://github.com/upsidedownlabs/Brain-BioAmp-Arduino-Firmware/blob/main/02-eeg-filter/02-eeg-filter.ino
 //
@@ -67,13 +68,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(__AVR_ATmega32U4__)
-#error "This sketch is for the Heart & Brain SpikerBox. Select Tools > Board > Arduino Leonardo."
+// Pin setup for each SpikerBox hardware version, matching Backyard Brains' firmware
+#if defined(__AVR_ATmega328P__)
+  // V0.62: carrier on D10 (port B bit 2), power LED on D13, VU-meter LEDs on D2-D8
+  #define CARRIER_PIN 10
+  #define CARRIER_PORT PORTB
+  #define CARRIER_BIT 0x04
+  void setupBoardPins() {
+    pinMode(13, OUTPUT);
+    digitalWrite(13, HIGH);                 // power LED on
+    for (byte pin = 2; pin <= 8; pin++) {   // VU-meter LEDs off
+      pinMode(pin, OUTPUT);
+      digitalWrite(pin, LOW);
+    }
+  }
+#elif defined(__AVR_ATmega32U4__)
+  // V0.53: carrier on D13 (port C bit 7)
+  #define CARRIER_PIN 13
+  #define CARRIER_PORT PORTC
+  #define CARRIER_BIT 0x80
+  void setupBoardPins() {}
+#else
+  #error "This sketch is for the Heart & Brain SpikerBox. Select Tools > Board > Arduino Uno (V0.62) or Arduino Leonardo (V0.53)."
 #endif
 
 #define BAUD_RATE 115200
 #define INPUT_PIN A0          // the SpikerBox's amplified signal (same pin as the factory firmware)
-#define CARRIER_PIN 13        // the SpikerBox needs a 5 kHz carrier here (D13 = port C bit 7)
 
 // Timer: 16 MHz / 8 / (199 + 1) = 10,000 interrupts per second.
 // Each interrupt flips the carrier (giving 5 kHz) and takes one ADC reading.
@@ -92,7 +112,8 @@ volatile unsigned int adcSum = 0;
 volatile byte adcCount = 0;
 
 void startSampling() {
-  pinMode(CARRIER_PIN, OUTPUT);
+  setupBoardPins();
+  pinMode(CARRIER_PIN, OUTPUT);   // the SpikerBox needs a 5 kHz carrier on this pin
   cli();
   // Faster ADC clock (prescaler 16), as in the factory firmware, so a reading fits in 100 us
   ADCSRA = (ADCSRA & ~0x07) | 0x04;
@@ -107,7 +128,7 @@ void startSampling() {
 }
 
 ISR(TIMER1_COMPA_vect) {
-  PORTC ^= B10000000;       // toggle D13: 5 kHz carrier
+  CARRIER_PORT ^= CARRIER_BIT;   // toggle the carrier pin: 5 kHz carrier
   adcSum += analogRead(INPUT_PIN);
   if (++adcCount >= DECIMATE) {
     byte next = (queueHead + 1) % QUEUE_SIZE;

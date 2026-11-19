@@ -105,22 +105,31 @@ Each band's brightness is relative to its own average over the last ~20 seconds.
 
 ## Using a Backyard Brains Heart & Brain SpikerBox
 
-The [Heart & Brain SpikerBox](https://backyardbrains.com/products/heartandbrainspikerbox) can be used instead of the BioAmp EXG Pill and Arduino UNO. It has its own amplifier and an **Arduino Leonardo** built in, so there's no wiring: connect the electrodes (or the [Backyard Brains EEG headband](https://backyardbrains.com/products/eegheadband)) to the SpikerBox and plug it into your computer by USB.
+The [Heart & Brain SpikerBox](https://backyardbrains.com/products/heartandbrainspikerbox) can be used instead of the BioAmp EXG Pill and Arduino UNO. It has its own amplifier and an Arduino-compatible chip built in, so there's no wiring: connect the electrodes (or the [Backyard Brains EEG headband](https://backyardbrains.com/products/eegheadband)) to the SpikerBox and plug it into your computer by USB.
 
 1. Open `spikerbox/spikerbox_eeg_bands/spikerbox_eeg_bands.ino` (or `spikerbox_eeg_filter.ino` for the Serial Plotter) in the Arduino IDE.
-2. Choose **Tools → Board → Arduino Leonardo** and the SpikerBox's port. The sketch refuses to compile for other boards, as a safety check.
-3. Upload. If the upload can't find the board, press the SpikerBox's reset button (if it has one) just as the IDE says "Uploading…", which often helps with Leonardo boards.
+2. Choose the board that matches your SpikerBox's hardware version, and the SpikerBox's port:
+
+   | SpikerBox version | Chip inside | Choose in **Tools → Board** |
+   |---|---|---|
+   | **V0.62** (newer) | ATmega328 | **Arduino Uno** |
+   | **V0.53** (older) | ATmega32U4 | **Arduino Leonardo** |
+
+   The sketch sets up the right pins for whichever you choose, and refuses to compile for any other board. If you're not sure which version you have, try **Arduino Uno** first: if the upload fails, try **Arduino Leonardo**.
+3. Upload. With the Leonardo version, if the upload can't find the board, press the SpikerBox's reset button (if it has one) just as the IDE says "Uploading…".
 4. Use the Serial Plotter or the [3D visualization](https://kkruege.github.io/Arduino-EEG/) as usual.
 
-> **This replaces the SpikerBox's factory firmware.** The Backyard Brains Spike Recorder app won't work with it until you put the original back: upload [`HeartAndBrainLeonardo-V1-0.ino`](https://github.com/BackyardBrains/SpikerShield/tree/master/Heart-And-Brain/Arduino%20Code/HeartAndBrainLeonardo-V1-0) from Backyard Brains' [SpikerShield repository](https://github.com/BackyardBrains/SpikerShield), with the board set to Arduino Leonardo.
+> **This replaces the SpikerBox's factory firmware.** The Backyard Brains Spike Recorder app won't work with it until you put the original back: upload `Heart-and-Brain-SpikerBox.ino` from the [`V0_62`](https://github.com/BackyardBrains/Heart-and-Brain-SpikerBox/tree/master/V0_62/Heart-and-Brain-SpikerBox) folder (board: Arduino Uno) or the [`V0_53`](https://github.com/BackyardBrains/Heart-and-Brain-SpikerBox/tree/master/V0_53/Heart-and-Brain-SpikerBox) folder (board: Arduino Leonardo) of Backyard Brains' [Heart-and-Brain-SpikerBox repository](https://github.com/BackyardBrains/Heart-and-Brain-SpikerBox).
 
 **How the SpikerBox versions differ from the UNO sketches**
 
-- They keep the **5 kHz carrier signal on pin D13** that Backyard Brains' firmware generates, since the SpikerBox hardware expects it, and read the signal on **A0** like the factory firmware.
+- They keep the **5 kHz carrier signal** that Backyard Brains' firmware generates, since the SpikerBox hardware expects it: on **D10** for V0.62 and **D13** for V0.53. Like the factory firmware, they read the signal on **A0**, and on V0.62 they turn on the power LED (D13) and turn off the VU-meter LEDs (D2–D8).
 - They take 10,000 readings per second and average every 40 into one sample, giving **250 samples per second**. Averaging whole carrier cycles also removes carrier ripple from the signal. The filters are redesigned for 250 Hz.
 - The SpikerBox amplifies differently from the BioAmp, so the numbers are on a different scale. If the EEG trace in the Serial Plotter is cut off or looks flat, change `Y_LIMIT`. The 3D visualization adjusts automatically.
 
-**How they were tested:** both sketches compile for the Arduino Leonardo. Their code was also run on a computer with simulated SpikerBox signals: the carrier came out at 5 kHz; test tones at 2, 6, 10 and 20 Hz each showed up in the right band; carrier ripple, 60 Hz mains hum and slow drift were filtered out; and the output streamed correctly into the 3D visualization. They have **not yet been tested on a physical SpikerBox**.
+**Hardware vs. software filtering:** the SpikerBox's own circuit amplifies the signal and applies one broad filter that lets all the EEG bands through together (Backyard Brains lists the Heart and Brain SpikerBox Classic at 0.6–108 Hz with a gain of 3,840). Splitting the signal into Delta, Theta, Alpha and Beta is done in software, by these sketches. At that gain, one ADC count is roughly 1.3 µV at the scalp, if your unit matches those specs.
+
+**How they were tested:** both sketches compile for the Arduino Uno (V0.62) and Arduino Leonardo (V0.53). Their code was also run on a computer with simulated SpikerBox signals, for both versions: the carrier came out at 5 kHz on the right pin; test tones at 2, 6, 10 and 20 Hz each showed up in the right band; carrier ripple, 60 Hz mains hum and slow drift were filtered out; and the output streamed correctly into the 3D visualization. They have **not yet been tested on a physical SpikerBox**.
 
 ## Notes
 
@@ -135,7 +144,7 @@ What was changed:
 
 - **`eeg_filter.ino`:** same 0.5–29.5 Hz filter as the original, with output reformatted for the Serial Plotter (labeled lines, fixed Max/Min bounds, slower scrolling), a start-up spike skip, and an added amplitude envelope.
 - **`eeg_bands.ino`:** keeps the original 256 Hz sampling timer and biquad filter structure, but replaces the single band-pass filter with four band filters (Delta, Theta, Alpha, Beta) and outputs each band's amplitude.
-- **`spikerbox/` sketches:** combine the filtering above with the timer, fast ADC setup and 5 kHz carrier from Backyard Brains' [`HeartAndBrainLeonardo-V1-0.ino`](https://github.com/BackyardBrains/SpikerShield/tree/master/Heart-And-Brain/Arduino%20Code/HeartAndBrainLeonardo-V1-0) (© 2013 Backyard Brains, MIT License; full notice in each sketch). They output text for the Serial Plotter and visualization instead of Spike Recorder's binary format.
+- **`spikerbox/` sketches:** combine the filtering above with the timer, fast ADC setup, pin setup and 5 kHz carrier from Backyard Brains' [Heart & Brain SpikerBox firmware](https://github.com/BackyardBrains/Heart-and-Brain-SpikerBox) (V0.62 and V0.53; © 2013 Backyard Brains, MIT License; full notice in each sketch). They output text for the Serial Plotter and visualization instead of Spike Recorder's binary format.
 - **`index.html`:** new. A 3D visualization built with [Three.js](https://threejs.org/) (MIT License) that reads the `eeg_bands.ino` output.
 
 ### AI assistance
